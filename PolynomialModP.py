@@ -1,9 +1,12 @@
+from common import *
 import IntegerModP
 
 
 class PolynomialModP():
     def __init__(self, prime, *coefficients):
         self.p = prime
+
+        # TODO Implement
 
         self.coefs = []
         for c in coefficients:
