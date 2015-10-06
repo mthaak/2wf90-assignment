@@ -5,7 +5,7 @@ class IntegerModP(int):
     """Integer mod prime p
 
     Attributes:
-        i (int): number % p
+        n (int): number % p
         p (int): prime < 100
     """
 
@@ -15,14 +15,19 @@ class IntegerModP(int):
         Args:
             n (int): number
             p (int): prime < 100
-
-        :type n: int
-        :type p: int
         """
         if type(n) != int:
             raise ValueError("Argument n is not an integer.")
         self.n = n % p
 
+        if type(p) != int:
+            raise ValueError("Argument p is not an integer.")
+        if p < 2:
+            raise ValueError("Argument p is too small, should be larger than 1.")
+        if p > 100:
+            raise ValueError("Argument p is too large, should be smaller than 100.")
+        if not is_prime(p):
+            raise ValueError("Argument p is not actually prime.")
         self.p = p
 
         super().__init__()

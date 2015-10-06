@@ -1,8 +1,10 @@
 from common import *
-from IntegerModP import IntegerModP
-from PolynomialModP import PolynomialModP
-from FiniteField import FiniteField
+from objects.IntegerModP import IntegerModP
+from objects.PolynomialModP import PolynomialModP
 
+
+# TODO test derivation int
+# TODO implement and test other derivations
 
 class SystemModP:
     """Arithmetic system mod prime p
@@ -15,10 +17,7 @@ class SystemModP:
         """Initialize a system mod p.
 
         Args:
-            n (int): number
-            p (int): p < 100
-
-        :type p: int
+            p (int): prime < 100
         """
         if type(p) != int:
             raise ValueError("Argument p is not an integer.")
@@ -35,16 +34,23 @@ class SystemModP:
 
         Args:
             n (int): number
-
-        :type n: int
+        Returns:
+            IntegerModP(n, self.p)
         """
-        if type(n) != int:
-            raise ValueError("Argument n is not an integer.")
-
         return IntegerModP(n, self.p)
 
-    def poly(self):
-        raise NotImplementedError
+    def poly(self, coefficients):
+        """Create a polynomial mod p
 
-    def field(self):
+        Args:
+            coefficients (int): coefficients sorted from most to least significant
+        Returns:
+            PolynomialModP(coefficients, self.p)
+        """
+        return PolynomialModP(coefficients, self.p)
+
+    def field(self, ):
+        """Create a finite field mod p with some irreducible polynomial f
+
+        Args
         raise NotImplementedError

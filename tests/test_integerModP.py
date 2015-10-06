@@ -1,5 +1,6 @@
 from unittest import TestCase
-from IntegerModP import IntegerModP
+
+from objects.IntegerModP import IntegerModP
 
 __author__ = 'Martin'
 
@@ -9,7 +10,10 @@ class TestIntegerModP(TestCase):
         self.n = IntegerModP(4, 5)
         self.m = IntegerModP(3, 5)
 
-    # Although the test results are positive, errors are given
+    def test___init__noninteger(self):
+        self.assertRaises(ValueError, IntegerModP(2.5, 3))
+
+    # Although the test results are positive, errors are given because the exception is raised in the decorator
     # def test__check_p(self):
     #     x = IntegerModP(2, 3)
     #     self.assertRaises(ValueError, self.n + x)
@@ -39,29 +43,30 @@ class TestIntegerModP(TestCase):
     def test___pow__(self):
         self.assertEqual(int(self.n ** 10), 1)
 
-    def test___iadd__(self):
-        self.n += self.m
-        self.assertEqual(int(self.n), 2)
-
-    def test___isub__(self):
-        self.n -= self.m
-        self.assertEqual(int(self.n), 1)
-
-    def test___imul__(self):
-        self.n *= self.m
-        self.assertEqual(int(self.n), 2)
-
-    def test___itrudiv__(self):
-        self.n /= self.m
-        self.assertEqual(int(self.n), 1)
-
-    def test___ifloordiv__(self):
-        self.n //= self.m
-        self.assertEqual(int(self.n), 1)
-
-    def test___ipow__(self):
-        self.n **= 10
-        self.assertEqual(int(self.n), 1)
+    # Not needed since these are not overridden
+    # def test___iadd__(self):
+    #     self.n += self.m
+    #     self.assertEqual(int(self.n), 2)
+    #
+    # def test___isub__(self):
+    #     self.n -= self.m
+    #     self.assertEqual(int(self.n), 1)
+    #
+    # def test___imul__(self):
+    #     self.n *= self.m
+    #     self.assertEqual(int(self.n), 2)
+    #
+    # def test___itruediv__(self):
+    #     self.n /= self.m
+    #     self.assertEqual(int(self.n), 1)
+    #
+    # def test___ifloordiv__(self):
+    #     self.n //= self.m
+    #     self.assertEqual(int(self.n), 1)
+    #
+    # def test___ipow__(self):
+    #     self.n **= 10
+    #     self.assertEqual(int(self.n), 1)
 
     def test___lt__(self):
         self.assertEqual(self.n < self.m, False)

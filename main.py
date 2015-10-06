@@ -1,7 +1,8 @@
 __author__ = 'Martin'
-from IntegerModP import IntegerModP
+from objects.IntegerModP import IntegerModP
 
 
+# TODO Put objects in subfolder
 def main():
     i = IntegerModP(5, 5)
     j = IntegerModP(3, 5)
