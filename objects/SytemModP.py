@@ -52,5 +52,6 @@ class SystemModP:
     def field(self, ):
         """Create a finite field mod p with some irreducible polynomial f
 
-        Args
+        Args:
+        """""
         raise NotImplementedError
