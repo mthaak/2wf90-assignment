@@ -6,7 +6,7 @@ class IntegerModP(int):
 
     Attributes:
         n (int): number % p
-        p (int): prime < 100
+        p (int): prime
     """
 
     def __init__(self, n, p):
@@ -33,7 +33,7 @@ class IntegerModP(int):
         super().__init__()
 
     def __new__(cls, n, p):
-        return super().__new__(cls, n)
+        return super().__new__(cls, int(n) % p)
 
     # Decorator for all binary operations to check whether primes match
     def _check_p(func):
@@ -50,114 +50,55 @@ class IntegerModP(int):
     @_check_p
     # Integer mod p addition
     def __add__(self, other):
+        """Add other IntegerModP or int."""
         return IntegerModP(super().__add__(other) % self.p, self.p)
 
     @_check_p
     # Integer mod p subtraction
     def __sub__(self, other):
+        """Subtract other IntegerModP or int."""
         return IntegerModP(super().__sub__(other) % self.p, self.p)
 
     @_check_p
     # Integer mod p multiplication
     def __mul__(self, other):
+        """Multiply with other IntegerModP or int."""
         return IntegerModP(super().__mul__(other) % self.p, self.p)
 
     @_check_p
     # Integer mod p division
     def __truediv__(self, other):
-        return self.__floordiv__(other)
+        """Divide by other IntegerModP or int, such that self = other * result (mod p)."""
+        if type(other) is int: other = IntegerModP(other, self.p)
+        return IntegerModP(next(i for i in range(self.p) if other * i == self), self.p)
 
     @_check_p
     # Integer mod p division
     def __floordiv__(self, other):
+        """Divide by other IntegerModP or int, returns only the quotient."""
         return IntegerModP(super().__floordiv__(other) % self.p, self.p)
 
+    @_check_p
+    # Integer mod p modulo
+    def __mod__(self, other):
+        """Modulo by other IntegerModP or int."""
+        return IntegerModP(int(super().__mod__(other)), int(other))
+
+    @_check_p
     # Integer mod p exponentiation
-    def __pow__(self, power):
-        if type(power) != int:
-            raise ValueError("Power is not an integer.")
-        if power < 0:
+    def __pow__(self, other):
+        """Raise to the power."""
+        if other < 0:
             raise ValueError("Power is negative.")
-        return IntegerModP(super().__pow__(power) % self.p, self.p)
+        return IntegerModP(super().__pow__(other) % self.p, self.p)
 
     # Integer mod p negation
     def __neg__(self):
-        return IntegerModP(-self.n % self.p, self.p)
-
-    # Integer mod p make positive
-    def __pos__(self):
-        return self
-
-    # @_check_p
-    # def __iadd__(self, other):
-    #     self.n = int.__add__(self.n, other.n) % self.p
-    #     return self
-    #
-    # @_check_p
-    # def __isub__(self, other):
-    #     self.n = int.__sub__(self.n, other.n) % self.p
-    #     return self
-    #
-    # @_check_p
-    # def __imul__(self, other):
-    #     self.n = int.__mul__(self.n, other.n) % self.p
-    #     return self
-    #
-    # @_check_p
-    # def __itruediv__(self, other):
-    #     self.__ifloordiv__(other)
-    #     return self
-    #
-    # @_check_p
-    # def __ifloordiv__(self, other):
-    #     self.n = int.__floordiv__(self.n, other.n) % self.p
-    #     return self
-    #
-    # @_check_power
-    # def __ipow__(self, power):
-    #     self.n = int.__pow__(self.n, power) % self.p
-    #     return self
-
-    @_check_p
-    # Integer mod p lower than
-    def __lt__(self, other):
-        return super().__lt__(other)
-
-    @_check_p
-    # Integer mod p lower than or equal to
-    def __le__(self, other):
-        return super().__le__(other)
-
-    @_check_p
-    # Integer mod p equal
-    def __eq__(self, other):
-        if type(other) is IntegerModP:
-            return super().__eq__(other.n)
-        elif type(other) is int:
-            return super().__eq__(other)
-        else:
-            raise ValueError("Type " + type(other) + " not supported")
-
-    # @_check_p
-    # Integer mod p not equal
-    def __ne__(self, other):
-        return super().__ne__(other)
-
-    @_check_p
-    # Integer mod p greater than or equal to
-    def __ge__(self, other):
-        return super().__ge__(other)
-
-    @_check_p
-    # Integer mod p greater than
-    def __gt__(self, other):
-        return super().__gt__(other)
-
-    def __int__(self):
-        return self.n
+        """Negate."""
+        return IntegerModP(super().__neg__() % self.p, self.p)
 
     def __str__(self):
-        return str(self.n) + " mod " + str(self.p)
+        return "{0} (mod {1})".format(str(self.n), str(self.p))
 
     def __repr__(self):
-        return str(self.n)
+        return "IntegerModP({0}, {1})".format(str(self.n), str(self.p))
