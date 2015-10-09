@@ -19,7 +19,7 @@ class SystemModP:
         Args:
             p (int): prime < 100
         """
-        if type(p) != int:
+        if type(p) is not int:
             raise ValueError("Argument p is not an integer.")
         if p < 2:
             raise ValueError("Argument p is too small, should be larger than 1.")
