@@ -2,78 +2,131 @@ from unittest import TestCase
 
 from objects.IntegerModP import IntegerModP
 
-class TestIntegerModP(TestCase):
-    def setUp(self):
-        self.a = IntegerModP(4, 5)
-        self.b = IntegerModP(3, 5)
 
-    # Although the test results are positive, errors are given because the exception is raised in the decorator
-    # def test___init__noninteger(self):
-    #     self.assertRaises(ValueError, IntegerModP(2.5, 3))
-    # def test__check_p(self):
-    #     x = IntegerModP(2, 3)
-    #     self.assertRaises(ValueError, self.n + x)
-    #
-    # def test__check_power_noninteger(self):
-    #     self.assertRaises(ValueError, self.n.__pow__(self.m))
-    #
-    # def test__check_power_negative(self):
-    #     self.assertRaises(ValueError, self.n ** (-2))
+class TestIntegerModP(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.a = IntegerModP(4, 5)
+        cls.b = IntegerModP(3, 5)
+        print("a =", str(cls.a))
+        print("b =", str(cls.b))
+        # TODO more testing (e.g. more combinations of types)
+
+    def test___init__(self):
+        c = IntegerModP(2, 5)
+        self.assertEqual(c.n, 2)
+        self.assertEqual(c.p, 5)
+
+    def test___init__notinteger(self):
+        with self.assertRaises(ValueError):
+            IntegerModP(2.5, 3)
+
+    def test___check_p(self):
+        x = IntegerModP(2, 3)
+        with self.assertRaises(ValueError):
+            self.a + x
+
+    def test__check_power_negative(self):
+        with self.assertRaises(ValueError):
+            self.a ** -2
 
     def test___add__(self):
         result = self.a + self.b
         self.assertEqual(result.n, 2)  # Test correct result
         self.assertEqual(result.p, 5)  # Test if prime also gets transferred
 
-    def test___add__int(self):
+    def test___add__int_r(self):
         result = self.a + 3
         self.assertEqual(result.n, 2)
         self.assertEqual(result.p, 5)
+
+    def test___add__int_l(self):
+        result = 3 + self.a
+        self.assertEqual(result, 7)
 
     def test___sub__(self):
         result = self.a - self.b
         self.assertEqual(result.n, 1)
         self.assertEqual(result.p, 5)
 
-    def test___sub__int(self):
+    def test___sub__int_r(self):
         result = self.a - 3
         self.assertEqual(result.n, 1)
         self.assertEqual(result.p, 5)
+
+    def test___sub__int_l(self):
+        result = 3 - self.a
+        self.assertEqual(result, -1)
 
     def test___mul__(self):
         result = self.a * self.b
         self.assertEqual(result.n, 2)
         self.assertEqual(result.p, 5)
 
-    def test___mul__int(self):
+    def test___mul__int_r(self):
         result = self.a * 3
         self.assertEqual(result.n, 2)
         self.assertEqual(result.p, 5)
 
+    def test___mul__int_l(self):
+        result = 3 * self.a
+        self.assertEqual(result, 12)
+
     def test___truediv__(self):
         result = self.a / self.b
-        self.assertEqual(result.n, 1)
+        self.assertEqual(result.n, 3)
         self.assertEqual(result.p, 5)
 
-    def test___truediv__int(self):
+    def test___truediv__int_r(self):
         result = self.a / 3
-        self.assertEqual(result.n, 1)
+        self.assertEqual(result.n, 3)
         self.assertEqual(result.p, 5)
+
+    def test___truediv__int_l(self):
+        result = 3 / self.a
+        self.assertEqual(result, 3 / 4)
 
     def test___floordiv__(self):
         result = self.a // self.b
         self.assertEqual(result.n, 1)
         self.assertEqual(result.p, 5)
 
-    def test___floordiv__int(self):
+    def test___floordiv__int_r(self):
         result = self.a // 3
         self.assertEqual(result.n, 1)
         self.assertEqual(result.p, 5)
 
-    def test___pow__(self):
-        result = self.a ** 10
+    def test___floordiv__int_l(self):
+        result = 3 // self.a
+        self.assertEqual(result, 0)
+
+    def test___mod__(self):
+        result = self.a % self.b
         self.assertEqual(result.n, 1)
+        self.assertEqual(result.p, 3)
+
+    def test___mod__int_r(self):
+        result = self.a % 3
+        self.assertEqual(result.n, 1)
+        self.assertEqual(result.p, 3)
+
+    def test___mod__int_l(self):
+        result = 3 % 4
+        self.assertEqual(result, 3)
+
+    def test___pow__(self):
+        result = self.a ** self.b
+        self.assertEqual(result.n, 4)
         self.assertEqual(result.p, 5)
+
+    def test___pow__int_r(self):
+        result = self.a ** 3
+        self.assertEqual(result.n, 4)
+        self.assertEqual(result.p, 5)
+
+    def test___pow__int_l(self):
+        result = 3 ** self.a
+        self.assertEqual(result, 81)
 
     def test___neg__(self):
         result = -self.a
@@ -84,31 +137,6 @@ class TestIntegerModP(TestCase):
         result = self.a
         self.assertEqual(result.n, 4)
         self.assertEqual(result.p, 5)
-
-    # Not needed since these are not overridden
-    # def test___iadd__(self):
-    #     self.n += self.m
-    #     self.assertEqual(int(self.n), 2)
-    #
-    # def test___isub__(self):
-    #     self.n -= self.m
-    #     self.assertEqual(int(self.n), 1)
-    #
-    # def test___imul__(self):
-    #     self.n *= self.m
-    #     self.assertEqual(int(self.n), 2)
-    #
-    # def test___itruediv__(self):
-    #     self.n /= self.m
-    #     self.assertEqual(int(self.n), 1)
-    #
-    # def test___ifloordiv__(self):
-    #     self.n //= self.m
-    #     self.assertEqual(int(self.n), 1)
-    #
-    # def test___ipow__(self):
-    #     self.n **= 10
-    #     self.assertEqual(int(self.n), 1)
 
     def test___lt__(self):
         self.assertEqual(self.a < self.b, False)
@@ -147,4 +175,5 @@ class TestIntegerModP(TestCase):
         self.assertEqual(self.a > 3, True)
 
     def test___int__(self):
+        self.assertEqual(type(int(self.a)), int)
         self.assertEqual(int(self.a), 4)
