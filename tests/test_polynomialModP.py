@@ -26,13 +26,13 @@ class TestPolynomialModP(TestCase):
             self.N + X
 
     def test_int_coefs(self):
-        self.assertEqual(self.N.int_coefs(), [2, 1, 0, 2, 1])
+        self.assertEqual(self.N.coefs, [2, 1, 0, 2, 1])
 
     def test_int_coefs_large(self):
-        self.assertEqual(self.L.int_coefs(), [1, 0, 0, 1, 1, 1, 1, 2, 0])
+        self.assertEqual(self.L.coefs, [1, 0, 0, 1, 1, 1, 1, 2, 0])
 
     def test_int_coefs_small(self):
-        self.assertEqual(self.S.int_coefs(), [1, 0])
+        self.assertEqual(self.S.coefs, [1, 0])
 
     def test_degree(self):
         self.assertEqual(self.N.degree(), 4)
@@ -56,84 +56,110 @@ class TestPolynomialModP(TestCase):
         C = PolynomialModP([1, 0, 0, 0, 0, 0, 0, 1], 2)
         D = PolynomialModP([1, 0, 1, 1], 2)
         q, r = C.long_divide(D)
-        self.assertEqual(q.int_coefs(), [1, 0, 1, 1, 1])
+        self.assertEqual(q.coefs, [1, 0, 1, 1, 1])
         self.assertEqual(q.p, 2)
-        self.assertEqual(r.int_coefs(), [])
+        self.assertEqual(r.coefs, [0])
         self.assertEqual(r.p, 2)
 
+    def test_gcd_so(self):
+        A = PolynomialModP([1, 0, 1, 0, 1], 2)
+        B = PolynomialModP([1, 1, 1, 1], 2)
+        g, x, y = A.gcd(B)
+        self.assertEqual(g, 1)
+        self.assertEqual(x * A + y * B, g)
+
     def test_gcd_large(self):
-        self.assertEqual(self.N.gcd(self.L).int_coefs(), [1])
+        g, x, y = self.N.gcd(self.L)
+        self.assertEqual(g, 1)
+        self.assertEqual(x * self.N + y * self.L, g)
 
     def test_gcd_small(self):
-        self.assertEqual(self.N.gcd(self.S).int_coefs(), [1])
+        g, x, y = self.N.gcd(self.S)
+        self.assertEqual(g, 1)
+        self.assertEqual(x * self.N + y * self.S, g)
 
     def test_congruent(self):
         self.assertIs(self.N.congruent(self.L, self.S), False)
 
     def test___add__large(self):
         result = self.N + self.L
-        self.assertEqual(result.int_coefs(), [1, 0, 0, 1, 0, 2, 1, 1, 1])
+        self.assertEqual(result.coefs, [1, 0, 0, 1, 0, 2, 1, 1, 1])
         self.assertEqual(result.p, 3)
         self.assertEqual(result, PolynomialModP([1, 0, 0, 1, 0, 2, 1, 1, 1], 3))
 
     def test___add__small(self):
         result = self.N + self.S
-        self.assertEqual(result.int_coefs(), [2, 1, 0, 0, 1])
+        self.assertEqual(result.coefs, [2, 1, 0, 0, 1])
         self.assertEqual(result.p, 3)
 
     def test___sub__large(self):
         result = self.N - self.L
-        self.assertEqual(result.int_coefs(), [2, 0, 0, 2, 1, 0, 2, 0, 1])
+        self.assertEqual(result.coefs, [2, 0, 0, 2, 1, 0, 2, 0, 1])
         self.assertEqual(result.p, 3)
 
     def test___sub__small(self):
         result = self.N - self.S
-        self.assertEqual(result.int_coefs(), [2, 1, 0, 1, 1])
+        self.assertEqual(result.coefs, [2, 1, 0, 1, 1])
         self.assertEqual(result.p, 3)
 
     def test___mul__large(self):
         result = self.N * self.L
-        self.assertEqual(result.int_coefs(), [2, 1, 0, 1, 1, 0, 2, 2, 2, 0, 2, 2, 0])
+        self.assertEqual(result.coefs, [2, 1, 0, 1, 1, 0, 2, 2, 2, 0, 2, 2, 0])
         self.assertEqual(result.p, 3)
 
     def test___mul__small(self):
         result = self.N * self.S
-        self.assertEqual(result.int_coefs(), [2, 1, 0, 2, 1, 0])
+        self.assertEqual(result.coefs, [2, 1, 0, 2, 1, 0])
         self.assertEqual(result.p, 3)
 
     def test___mul__int(self):
         result = self.N * 3
-        self.assertEqual(result.int_coefs(), [])
+        self.assertEqual(result.coefs, [0])
         self.assertEqual(result.p, 3)
 
     def test___mul__int_small(self):
         result = self.S * 4
-        self.assertEqual(result.int_coefs(), [1, 0])
+        self.assertEqual(result.coefs, [1, 0])
         self.assertEqual(result.p, 3)
 
     def test___mul__int_large(self):
         result = self.L * 2
-        self.assertEqual(result.int_coefs(), [2, 0, 0, 2, 2, 2, 2, 1, 0])
+        self.assertEqual(result.coefs, [2, 0, 0, 2, 2, 2, 2, 1, 0])
         self.assertEqual(result.p, 3)
 
     def test___truediv__large(self):
         result = self.N / self.L
-        self.assertEqual(result.int_coefs(), [0])
+        self.assertEqual(result.coefs, [0])
         self.assertEqual(result.p, 3)
 
     def test___truediv__small(self):
         result = self.N / self.S
-        self.assertEqual(result.int_coefs(), [2, 1, 0, 2])
+        self.assertEqual(result.coefs, [2, 1, 0, 2])
         self.assertEqual(result.p, 3)
 
     def test___mod__large(self):
         result = self.N % self.L
-        self.assertEqual(result.int_coefs(), [2, 1, 0, 2, 1])
+        self.assertEqual(result.coefs, [2, 1, 0, 2, 1])
         self.assertEqual(result.p, 3)
 
     def test___mod__small(self):
         result = self.N % self.S
-        self.assertEqual(result.int_coefs(), [1])
+        self.assertEqual(result.coefs, [1])
+        self.assertEqual(result.p, 3)
+
+    def test___pow__(self):
+        result = self.N ** 3
+        self.assertEqual(result.coefs, [2, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 1])
+        self.assertEqual(result.p, 3)
+
+    def test___pow__small(self):
+        result = self.S ** 4
+        self.assertEqual(result.coefs, [1, 0, 0, 0, 0])
+        self.assertEqual(result.p, 3)
+
+    def test___pow__large(self):
+        result = self.L ** 0
+        self.assertEqual(result, 1)
         self.assertEqual(result.p, 3)
 
     def test___eq__equal(self):
@@ -164,8 +190,56 @@ class TestPolynomialModP(TestCase):
         self.assertEqual(len(self.S), 2)
 
     def test___int__(self):
+        self.assertEqual(type(int(self.I)), int)
         self.assertEqual(int(self.I), 2)
 
     def test___int__error(self):
         with self.assertRaises(ValueError):
             int(self.N)
+
+    def test_1_1b(self):
+        A = PolynomialModP([1, 0, 1], 2)
+        B = PolynomialModP([1, 0, 0, 1], 2)
+        g, x, y = A.gcd(B)
+        self.assertEqual(g, PolynomialModP([1, 1], 2))
+        self.assertEqual(x * A + y * B, g)
+
+    def test_1_1c(self):
+        A = PolynomialModP([1, -1, 1], 3)
+        B = PolynomialModP([1, 0, 1, 2], 3)
+        g, x, y = A.gcd(B)
+        self.assertEqual(g, PolynomialModP([1, -2], 3))
+        self.assertEqual(x * A + y * B, g)
+
+    def test_1_8(self):
+        A = PolynomialModP([1, -1], 7)
+        B = PolynomialModP([1, 1, 1], 7)
+        g, x, y = A.gcd(B)
+        self.assertEqual(g, PolynomialModP([1], 7))
+        self.assertEqual(x * A + y * B, g)
+
+    def test_2_1a(self):
+        result = PolynomialModP([1, 0, 0, 0], 7).congruent(1, PolynomialModP([1, 1, 1], 7))
+        self.assertEqual(result, True)
+
+    def test_2_1b(self):
+        result = PolynomialModP([1, 0, 0, 1, 2], 5).congruent(PolynomialModP([1, 3], 5), PolynomialModP([1, 1], 5))
+        self.assertEqual(result, True)
+
+    def test_3_6a(self):
+        result = PolynomialModP([1, 0, 0, 1, 1], 2) / PolynomialModP([1, 1, 1], 2)
+        self.assertEqual(result, PolynomialModP([1, 1, 0], 2))
+        result = PolynomialModP([1, 0, 0, 1, 1], 2) % PolynomialModP([1, 1, 1], 2)
+        self.assertEqual(result, 1)
+
+    def test_3_10(self):
+        result = PolynomialModP([1, 0, 0, 0, 1, 1], 2) / PolynomialModP([1, 1, 1], 2)
+        self.assertEqual(result, PolynomialModP([1, 1, 0, 1], 2))
+        result = PolynomialModP([1, 0, 0, 0, 1, 1], 2) % PolynomialModP([1, 1, 1], 2)
+        self.assertEqual(result, 0)
+
+    def test_3_11(self):
+        result = PolynomialModP([1, 0, 0, 0, 0, 0, 0, 0], 2) / PolynomialModP([1, 0, 1, 1], 2)
+        self.assertEqual(result, PolynomialModP([1, 0, 1, 1, 0], 2))
+        result = PolynomialModP([1, 0, 0, 0, 0, 0, 0, 0], 2) % PolynomialModP([1, 0, 1, 1], 2)
+        self.assertEqual(result, PolynomialModP([1, 0, 1, 0], 2))
