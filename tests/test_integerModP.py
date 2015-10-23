@@ -10,16 +10,31 @@ class TestIntegerModP(TestCase):
         cls.b = IntegerModP(3, 5)
         print("a =", str(cls.a))
         print("b =", str(cls.b))
-        # TODO more testing (e.g. more combinations of types)
 
     def test___init__(self):
         c = IntegerModP(2, 5)
         self.assertEqual(c.n, 2)
         self.assertEqual(c.p, 5)
 
-    def test___init__notinteger(self):
+    def test___init__notinteger_n(self):
         with self.assertRaises(ValueError):
             IntegerModP(2.5, 3)
+
+    def test___init__notinteger_p(self):
+        with self.assertRaises(ValueError):
+            IntegerModP(3, 2.5)
+
+    def test___init__notprime_p(self):
+        with self.assertRaises(ValueError):
+            IntegerModP(3, 12)
+
+    def test___init__toosmall_p(self):
+        with self.assertRaises(ValueError):
+            IntegerModP(3, 1)
+
+    def test___init__toolarge_p(self):
+        with self.assertRaises(ValueError):
+            IntegerModP(3, 101)
 
     def test___check_p(self):
         x = IntegerModP(2, 3)

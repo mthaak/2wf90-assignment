@@ -1,4 +1,5 @@
 from unittest import TestCase
+from objects.IntegerModP import IntegerModP
 
 from objects.PolynomialModP import PolynomialModP
 
@@ -9,21 +10,55 @@ class TestPolynomialModP(TestCase):
         cls.N = PolynomialModP([5, 4, 3, 2, 1], 3)
         cls.L = PolynomialModP([13, 9, 0, 16, 4, 19, 25, 5, 0], 3)
         cls.S = PolynomialModP([0, 4, 0], 3)
-        cls.I = PolynomialModP([5], 3)
         print("N =", cls.N)
         print("L =", cls.L)
         print("S =", cls.S)
-        print("I =", cls.I)
-        # TODO more testing (e.g. more combinations of types)
+
+    def test___init__intlist(self):
+        C = PolynomialModP([3, 2, 1], 5)
+        C.coefs = [3, 2, 1]
+        C.p = 5
+
+    def test___init__IntegerModPlist(self):
+        C = PolynomialModP([IntegerModP(3, 7), IntegerModP(2, 3), IntegerModP(1, 11)], 5)
+        C.coefs = [3, 2, 1]
+        C.p = 5
+
+    def test___init__comblist(self):
+        C = PolynomialModP([IntegerModP(3, 7), 2, IntegerModP(1, 11)], 5)
+        C.coefs = [3, 2, 1]
+        C.p = 5
 
     def test___init__notintlist(self):
         with self.assertRaises(ValueError):
-            PolynomialModP([1.7, 3.5, 5.4], 3)
+            PolynomialModP([1, 3.5, 5], 3)
+
+    def test___init__notinteger_p(self):
+        with self.assertRaises(ValueError):
+            PolynomialModP([1, 1], 2.5)
+
+    def test___init__notprime_p(self):
+        with self.assertRaises(ValueError):
+            PolynomialModP([1, 1], 12)
+
+    def test___init__toosmall_p(self):
+        with self.assertRaises(ValueError):
+            PolynomialModP([1, 1], 1)
+
+    def test___init__toolarge_p(self):
+        with self.assertRaises(ValueError):
+            PolynomialModP([1, 1], 101)
 
     def test___check_p(self):
         X = PolynomialModP([1, 2, 3], 5)
         with self.assertRaises(ValueError):
             self.N + X
+
+    def test_clone(self):
+        C = self.N.clone()
+        self.assertEqual(C.coefs, self.N.coefs)
+        self.assertEqual(C.p, self.N.p)
+        self.assertEqual(C, self.N)
 
     def test_int_coefs(self):
         self.assertEqual(self.N.coefs, [2, 1, 0, 2, 1])
@@ -78,8 +113,35 @@ class TestPolynomialModP(TestCase):
         self.assertEqual(g, 1)
         self.assertEqual(x * self.N + y * self.S, g)
 
-    def test_congruent(self):
+    def test_congruent_large_small(self):
         self.assertIs(self.N.congruent(self.L, self.S), False)
+
+    def test_congruent_large_other(self):
+        self.assertIs(self.N.congruent(self.L, PolynomialModP([2, 0, 0, 2, 1, 0, 2, 0, 1], 3)), True)
+
+    def test_congruent_small_large(self):
+        self.assertIs(self.N.congruent(self.S, self.L), False)
+
+    def test_congruent_small_other(self):
+        self.assertIs(self.N.congruent(self.S, PolynomialModP([2, 1, 0, 1, 1], 3)), True)
+
+    def test_congruent_int_other(self):
+        self.assertIs(self.N.congruent(1, PolynomialModP([1, 0], 3)), True)
+
+    def test_congruent_IntegerModP_other(self):
+        self.assertIs(self.N.congruent(IntegerModP(1, 3), PolynomialModP([1, 0], 3)), True)
+
+    def test_congruent_PolynomialModP_other(self):
+        self.assertIs(self.N.congruent(PolynomialModP([1], 3), PolynomialModP([1, 0], 3)), True)
+
+    def test_congruent_other_int(self):
+        self.assertIs(self.N.congruent(PolynomialModP([1, 1, 0, 2], 3), 2), True)
+
+    def test_congruent_other_IntegerModP(self):
+        self.assertIs(self.N.congruent(PolynomialModP([1, 1, 0, 2], 3), IntegerModP(2, 3)), True)
+
+    def test_congruent_other_PolynomialModP(self):
+        self.assertIs(self.N.congruent(PolynomialModP([1, 1, 0, 2], 3), PolynomialModP([2], 3)), True)
 
     def test___add__large(self):
         result = self.N + self.L
@@ -190,8 +252,9 @@ class TestPolynomialModP(TestCase):
         self.assertEqual(len(self.S), 2)
 
     def test___int__(self):
-        self.assertEqual(type(int(self.I)), int)
-        self.assertEqual(int(self.I), 2)
+        I = PolynomialModP([5], 7)
+        self.assertEqual(type(int(I)), int)
+        self.assertEqual(int(I), 5)
 
     def test___int__error(self):
         with self.assertRaises(ValueError):
