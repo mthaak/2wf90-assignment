@@ -1,15 +1,23 @@
-__author__ = 'Martin'
-from objects.IntegerModP import IntegerModP
+from objects.IntegerModP import IntegerModP as IntegerModP
+from objects.PolynomialModP import PolynomialModP as PolynomialModP
+from objects.FiniteField import FiniteField as FiniteField
+
+# Aliases
+IntModP = IntegerModP
+PolyModP = PolynomialModP
+FF = FiniteField
+
+import code
 
 
-# TODO Put objects in subfolder
 def main():
-    i = IntegerModP(5, 5)
-    j = IntegerModP(3, 5)
-    print(i + j)
-    pass
-    # TODO Implement
-
+    # Copies over all variables
+    vars = globals().copy()
+    vars.update(locals())
+    # Creates an interactive console
+    shell = code.InteractiveConsole(vars)
+    shell.interact(banner="Interactive Python console for the purpose of testing the 2WF90 Assignment.\n"
+                          "See documentation.pdf for instructions on use.")
 
 if __name__ == '__main__':
     main()
