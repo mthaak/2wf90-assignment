@@ -50,7 +50,7 @@ class PolynomialModP(list):
     # Decorator for all binary operations to check whether primes match
     # Also converts other to PolynomialModP if needed
     def _check_p(func):
-        def op(self, other):
+        def op(self, other, *args):
             if type(other) is PolynomialModP:
                 if self.p != other.p:
                     raise ValueError("Primes are incompatible.")
@@ -64,22 +64,22 @@ class PolynomialModP(list):
                 other = PolynomialModP(other, self.p)
             else:
                 raise ValueError("Operand type " + str(type(other)) + "is not supported.")
-            return func(self, other)
+            return func(self, other, *args)
 
         return op
 
     # Clone self to prevent mutation
-    def _clone(self):
+    def clone(self):
         """Clone self."""
         return PolynomialModP(self.coefs, self.p)
 
     def degree(self):
-        """Return the degree."""
+        """Get the degree."""
         return len(self.coefs) - 1
 
     # Function value of x
     def f(self, x):
-        """Return the image of x."""
+        """Calculate the image of x."""
         result = 0
         t = 1  # term
         for c in reversed(self.coefs):
@@ -90,31 +90,34 @@ class PolynomialModP(list):
     # Long division
     def long_divide(self, other):
         """Long divide by other PolynomialModP, returns (quotient, remainder) as tuple."""
+        # Based on algorithm 1.2.6
         q = PolynomialModP([0], self.p)  # quotient
-        r = self._clone()  # remainder
+        r = self.clone()  # remainder
         d = other  # divisor
         while r.degree() > d.degree() or (r.degree() == d.degree() and r.coefs[-1] >= d.coefs[-1]):
             f_coefs = [int(r.coefs[0] / d.coefs[0])]  # coefficient of term
-            f_coefs += (r.degree() - d.degree()) * [0]  # Pad with zero's to denote term
+            f_coefs += (r.degree() - d.degree()) * [0]  # Pad with zero's to denote order
             f = PolynomialModP(f_coefs, self.p)  # factor
             r -= f * d
             q = q + f
-        return q, r
+        return q.clone(), r.clone()
 
     @_check_p
-    # Polynomial mod p gcd using Euclidian algorithm
+    # Polynomial mod p gcd using Euclidean algorithm
     def gcd(self, other):
         """Calculate the gcd with other PolynomialModP, returns (gcd, x, y) as tuple s.t. gcd = x * self + y * other."""
-        a = self._clone()
-        b = other._clone()
+        # Based on algorithm 1.2.11
+        a = self.clone()
+        b = other.clone()
         x, y, u, v = 0, 1, 1, 0
         while a != 0:
             q, r = b.long_divide(a)
             m, n = x - u * q, y - v * q
             b, a, x, y, u, v = a, r, u, v, m, n
-        return b, x, y
+        return b.clone(), x.clone(), y.clone()
 
-    # Polynomial mod p congruence with other polynomial modulo mod
+    @_check_p
+    # Polynomial mod p congruence with other polynomial modulo k
     def congruent(self, other, k):
         """Test congruence with other PolynomialModP (mod k)"""
         return (self - other) % k == 0
@@ -127,7 +130,7 @@ class PolynomialModP(list):
         coefs = [(i + j) % self.p for i, j in zip(d + self.coefs, e + other.coefs)]
         return PolynomialModP(coefs, self.p)
 
-    # Makes add operation commutative, result is in both cases a PolynomialModP
+    # Makes add operation commutative, so result is in both cases a PolynomialModP
     @_check_p
     def __radd__(self, other):
         return other.__add__(self)
@@ -221,9 +224,9 @@ class PolynomialModP(list):
             raise ValueError("Polynomial is not constant.")
 
     # Returns polynomial in the canonical notation starting with the highest order term
-    def __str__(self):
+    def toString(self):
         if not self.coefs:  # If no coefficients
-            return "<null> (mod " + str(self.p) + ")"
+            return "<empty>"
         terms = []
         for i, c in enumerate(reversed(self.coefs)):
             if c != 0 or len(self) == 1:
@@ -235,8 +238,11 @@ class PolynomialModP(list):
                 if i >= 2:
                     term += "^" + str(i)
                 terms = [term] + terms
+        return " + ".join(terms)
 
-        return "{0} (mod {1})".format(" + ".join(terms), str(self.p))
+    def __str__(self):
+        return "{0} (mod {1})".format(self.toString(), str(self.p))
 
     def __repr__(self):
-        return "PolynomialModP({0}, {1})".format(str(self.coefs), str(self.p))
+        # return "PolynomialModP({0}, {1})".format(str(self.coefs), str(self.p))
+        return self.__str__()

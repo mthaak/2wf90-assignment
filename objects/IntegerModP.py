@@ -87,7 +87,7 @@ class IntegerModP(int):
     @_check_p
     # Integer mod p exponentiation
     def __pow__(self, other):
-        """Raise to the power."""
+        """Raise to the power of other IntegerModP or int."""
         if other < 0:
             raise ValueError("Power is negative.")
         return IntegerModP(super().__pow__(other) % self.p, self.p)
@@ -101,4 +101,5 @@ class IntegerModP(int):
         return "{0} (mod {1})".format(str(self.n), str(self.p))
 
     def __repr__(self):
-        return "IntegerModP({0}, {1})".format(str(self.n), str(self.p))
+        # return "IntegerModP({0}, {1})".format(str(self.n), str(self.p))
+        return self.__str__()
