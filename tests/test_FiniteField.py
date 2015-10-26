@@ -49,12 +49,12 @@ class TestFiniteField(TestCase):
             FiniteField(PolynomialModP([1], 3), 3)
 
     def test_additionTable(self):
-        table = self.F.additionTable()
-        print("\nAddition table: \n" + str(table))
+        print("\nAddition table:")
+        self.F.additionTable()
 
     def test_multiplicationTable(self):
-        table = self.F.multiplicationTable()
-        print("\nMultiplication table: \n" + str(table))
+        print("\nMultiplication table:")
+        self.F.multiplicationTable()
 
     def test_elements(self):
         elements_expected = [[0], [1], [1, 0], [1, 1]]

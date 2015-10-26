@@ -64,12 +64,12 @@ class FiniteField:
         return op
 
     def additionTable(self):
-        """Produce addition table."""
-        return self.Table([[i + j for i in self.elements()] for j in self.elements()], self.elements(), "+")
+        """Print addition table."""
+        print(self.Table([[i + j for i in self.elements()] for j in self.elements()], self.elements(), "+"))
 
     def multiplicationTable(self):
-        """Produce multiplication table."""
-        return self.Table([[i * j for i in self.elements()] for j in self.elements()], self.elements(), "*")
+        """Print multiplication table."""
+        print(self.Table([[i * j for i in self.elements()] for j in self.elements()], self.elements(), "*"))
 
     def elements(self):
         """Get residue classes in field."""
