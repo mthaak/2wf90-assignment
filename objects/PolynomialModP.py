@@ -94,13 +94,14 @@ class PolynomialModP(list):
         q = PolynomialModP([0], self.p)  # quotient
         r = self.clone()  # remainder
         d = other  # divisor
-        while r.degree() > d.degree() or (r.degree() == d.degree() and r.coefs[-1] >= d.coefs[-1]):
+        while r.degree() > d.degree() or \
+                (r.degree() == d.degree() and r.coefs[-r.degree() - 1] >= d.coefs[-d.degree() - 1]):
             f_coefs = [int(r.coefs[0] / d.coefs[0])]  # coefficient of term
             f_coefs += (r.degree() - d.degree()) * [0]  # Pad with zero's to denote order
             f = PolynomialModP(f_coefs, self.p)  # factor
             r -= f * d
             q = q + f
-        return q.clone(), r.clone()
+        return q, r
 
     @_check_p
     # Polynomial mod p gcd using Euclidean algorithm
@@ -109,12 +110,13 @@ class PolynomialModP(list):
         # Based on algorithm 1.2.11
         a = self.clone()
         b = other.clone()
-        x, y, u, v = 0, 1, 1, 0
+        x, y = PolynomialModP([0], self.p), PolynomialModP([1], self.p),
+        u, v = PolynomialModP([1], self.p), PolynomialModP([0], self.p)
         while a != 0:
             q, r = b.long_divide(a)
             m, n = x - u * q, y - v * q
             b, a, x, y, u, v = a, r, u, v, m, n
-        return b.clone(), x.clone(), y.clone()
+        return b, x, y
 
     @_check_p
     # Polynomial mod p congruence with other polynomial modulo k
