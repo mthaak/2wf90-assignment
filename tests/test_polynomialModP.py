@@ -278,7 +278,7 @@ class TestPolynomialModP(TestCase):
         A = PolynomialModP([1, -1], 7)
         B = PolynomialModP([1, 1, 1], 7)
         g, x, y = A.gcd(B)
-        self.assertEqual(g, PolynomialModP([1], 7))
+        self.assertEqual(g, PolynomialModP([3], 7))
         self.assertEqual(x * A + y * B, g)
 
     def test_2_1a(self):
@@ -303,6 +303,6 @@ class TestPolynomialModP(TestCase):
 
     def test_3_11(self):
         result = PolynomialModP([1, 0, 0, 0, 0, 0, 0, 0], 2) / PolynomialModP([1, 0, 1, 1], 2)
-        self.assertEqual(result, PolynomialModP([1, 0, 1, 1, 0], 2))
+        self.assertEqual(result, PolynomialModP([1, 0, 1, 1, 1], 2))
         result = PolynomialModP([1, 0, 0, 0, 0, 0, 0, 0], 2) % PolynomialModP([1, 0, 1, 1], 2)
-        self.assertEqual(result, PolynomialModP([1, 0, 1, 0], 2))
+        self.assertEqual(result, PolynomialModP([1], 2))
