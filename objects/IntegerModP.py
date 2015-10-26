@@ -42,7 +42,7 @@ class IntegerModP(int):
                 if self.p != other.p:
                     raise ValueError("Primes are incompatible.")
             elif type(other) is not int:
-                raise ValueError("Operand type " + type(other) + "is not supported.")
+                raise ValueError("Operand type " + str(type(other)) + "is not supported.")
             return func(self, other)
 
         return op
