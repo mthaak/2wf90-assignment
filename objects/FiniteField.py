@@ -63,6 +63,11 @@ class FiniteField:
 
         return op
 
+    def elements(self):
+        """Get residue classes in field."""
+        return [PolynomialModP(list(f), self.p) for f in
+                itertools.product(list(range(0, self.p)), repeat=self.f.degree())]
+
     def additionTable(self):
         """Print addition table."""
         print(self.Table([[i + j for i in self.elements()] for j in self.elements()], self.elements(), "+"))
@@ -70,11 +75,6 @@ class FiniteField:
     def multiplicationTable(self):
         """Print multiplication table."""
         print(self.Table([[i * j for i in self.elements()] for j in self.elements()], self.elements(), "*"))
-
-    def elements(self):
-        """Get residue classes in field."""
-        return [PolynomialModP(list(f), self.p) for f in
-                itertools.product(list(range(0, self.p)), repeat=self.f.degree())]
 
     @_check_arg
     def isPrimitive(self, a):
@@ -110,7 +110,7 @@ class FiniteField:
         return t == n
 
     def irreducibleElement(self, n):
-        """Find irreducible element of degree n in field."""
+        """Find irreducible element of degree n in the field."""
         # Algorithm 4.1.6
         if type(n) is not int:
             raise ValueError("Degree n should be of type int.")
@@ -153,6 +153,7 @@ class FiniteField:
     @_check_arg
     def exp_basis(self, a, m):
         """Calculate a to the power m using a normal basis."""
+        # Algorithm 5.1.1
         i = 0
         k = floor(log(m, 2))
         m = [int(x) for x in reversed(bin(m)[2:])]
