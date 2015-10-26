@@ -5,9 +5,6 @@ def is_prime(n):
 
     Args:
         n (int) : Number to be tested
-
-    :type n: int
-    :return: bool
     """
     if n <= 1:
         return False
@@ -21,3 +18,15 @@ def is_prime(n):
             return False
         i += 6
     return True
+
+
+def prime_divisors(n):
+    """Find prime factors of n.
+
+     Returns divisors in a list.
+
+    Args:
+        n (int) : Number of which prime factors have to be found
+    """
+    divisors = [d for d in range(2, n // 2 + 1) if n % d == 0]
+    return [d for d in divisors if all(d % od != 0 for od in divisors if od != d)] + [n]
